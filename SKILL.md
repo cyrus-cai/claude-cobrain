@@ -51,7 +51,6 @@ Ask: **Install?**
 Output: `cobrain is running (PID <pid>).`
 Ask question: `cobrain is running (PID <pid>). What would you like to do?`
 - Stop
-- Restart
 - View logs
 - Check update
 - Uninstall
@@ -60,9 +59,8 @@ Ask question: `cobrain is running (PID <pid>). What would you like to do?`
 Output: `cobrain is installed but not running.`
 Ask question: `cobrain is installed but not running. What would you like to do?`
 - Start
-- Reinstall
 - View logs
-- Check update
+- Check update (also handles reinstall)
 - Uninstall
 
 ### Step 3 — Install
