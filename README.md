@@ -11,7 +11,10 @@ Claude and other models already excel at specific tasks like coding. This projec
 - Claude catches unconsidered decisions before they happen, compounding toward a **doubled income**
 
 
-## What does claude-cobrain do?
+---
+
+
+### What does claude-cobrain do?
 
 claude-cobrain is a macOS background daemon that continuously monitors your active window and generates natural language summaries of what you're working on. It:
 
@@ -20,21 +23,21 @@ claude-cobrain is a macOS background daemon that continuously monitors your acti
 - appends timestamped summaries to **markdown files**
 
 
-## Installation
+### Installation
 
-Paste to Claude Code
+Paste to **Claude Code**
 
 ```shell
 clone https://github.com/cyrus-cai/claude-cobrain and run SKILL.md until cobrain is running
 ```
-Currently for macOS only
+Currently for macOS only.
 
-## System Architecture
+### System Architecture
 
 ![System Architecture](system-architecture.png)
 
 
-## System Requirements
+### System Requirements
 
 | Component         | Requirement                       | Purpose                                      |
 | ----------------- | --------------------------------- | -------------------------------------------- |
