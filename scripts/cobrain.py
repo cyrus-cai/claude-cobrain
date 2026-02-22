@@ -212,18 +212,15 @@ def output_file(dt: datetime) -> Path:
 
 def ensure_header(path: Path, dt: datetime):
     if not path.exists():
-        label = f"ollama/{OLLAMA_MODEL}" if MODEL_BACKEND == "ollama" else f"fastvlm/{FASTVLM_MODEL}"
-        path.write_text(
-            f"# {dt.strftime('%Y-%m-%d')} · Live Memory\n\n"
-            f"_Source: {label}_\n\n"
-        )
+        path.write_text(f"# {dt.strftime('%Y-%m-%d')} · Live Memory\n\n")
 
 def write_entry(app: str, summary: str):
     now = datetime.now()
     path = output_file(now)
     ensure_header(path, now)
     ts = now.strftime("%H:%M:%S")
-    entry = f"\n### {ts} · {app}\n{summary}\n"
+    model_label = f"ollama/{OLLAMA_MODEL}" if MODEL_BACKEND == "ollama" else f"fastvlm/{FASTVLM_MODEL}"
+    entry = f"\n### {ts} · {app} `{model_label}`\n{summary}\n"
     with open(path, "a", encoding="utf-8") as f:
         f.write(entry)
 
