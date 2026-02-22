@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.1] - 2026-02-22
+
+### Changed
+- Each log entry now includes the model used (e.g. `ollama/qwen3-vl:2b`) directly in the heading, reflecting the actual backend at capture time.
+
+
 ## [0.1.0] - 2026-02-22
 
 ### Added

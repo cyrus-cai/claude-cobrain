@@ -1,6 +1,6 @@
 ---
 name: claude-cobrain
-version: 0.1.0
+version: 0.1.1
 description: Manage claude-cobrain daemon - captures the active window and summarizes it using local VLM (Ollama + qwen3-vl:2b), writing entries to daily markdown files at ~/.claude/cobrain/
 ---
 
