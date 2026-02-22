@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.cobrain</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/zsh</string>
+        <string>-c</string>
+        <string>PYTHON_PATH OUTPUT_DIR/cobrain.py</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>OUTPUT_DIR</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>OUTPUT_DIR</key>
+        <string>OUTPUT_DIR</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>ThrottleInterval</key>
+    <integer>10</integer>
+</dict>
+</plist>
