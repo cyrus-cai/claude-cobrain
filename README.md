@@ -1,6 +1,6 @@
 # claude-cobrain
 
-**English** | [简体中文](./README_CN.md)
+**English** | [简体中文](./README_zh.md)
 
 ## What if AI had the same context as you?
 
