@@ -2,6 +2,8 @@
 
 **English** | [简体中文](./README_zh.md)
 
+> ⚠️ **Note**: This project is currently in the **preview stage**. Features may be unstable, and there might be breaking changes in future updates.
+
 ## What if AI had the same context as you?
 
 Claude and other models already excel at specific tasks like coding. This project gives them persistent memory of entire workflow by continuously recording your screen activities.
@@ -12,34 +14,44 @@ Claude and other models already excel at specific tasks like coding. This projec
 - Claude surfaces constructive suggestions that have **measurable economic value**
 - Claude catches unconsidered decisions before they happen, compounding toward a **doubled income**
 
-
----
-
-
-### What does claude-cobrain do?
+## What does claude-cobrain do?
 
 claude-cobrain is a macOS background daemon that continuously monitors your active window and generates natural language summaries of what you're working on. It:
 
 - captures screenshots of the frontmost window
 - processes them through a local VLM
-- appends timestamped summaries to **markdown files**
+- appends timestamped summaries to markdown files
 
+## Installation
 
-### Installation
-
-Paste to **Claude Code**
+Step 1 - Add the marketplace (first time only):
 
 ```shell
-clone https://github.com/cyrus-cai/claude-cobrain and run SKILL.md until cobrain is running
+/plugin marketplace add cyrus-cai/claude-cobrain
 ```
+
+Step 2 - Install the plugin:
+
+```shell
+/plugin install claude-cobrain
+```
+
+Step 3 - Set up the daemon:
+
+```shell
+/claude-cobrain:cobrain install
+```
+
 Currently for macOS only.
 
-### System Architecture
+## Uninstalling
 
-![System Architecture](system-architecture.png)
+Important: Before removing the plugin, always run `/claude-cobrain:cobrain uninstall` first to stop the daemon and remove the LaunchAgent. Otherwise the daemon will continue running in the background.
 
+1. `/claude-cobrain:cobrain uninstall` - stops daemon, removes LaunchAgent and daemon files
+2. `/plugin uninstall claude-cobrain` - removes the plugin
 
-### System Requirements
+## System Requirements
 
 | Component         | Requirement                       | Purpose                                      |
 | ----------------- | --------------------------------- | -------------------------------------------- |
