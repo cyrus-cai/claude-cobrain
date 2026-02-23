@@ -51,10 +51,6 @@ Important: Before removing the plugin, always run `/claude-cobrain:cobrain unins
 1. `/claude-cobrain:cobrain uninstall` - stops daemon, removes LaunchAgent and daemon files
 2. `/plugin uninstall claude-cobrain` - removes the plugin
 
-## System Architecture
-
-![System Architecture](system-architecture.png)
-
 ## System Requirements
 
 | Component         | Requirement                       | Purpose                                      |

@@ -51,10 +51,6 @@ claude-cobrain 是一个 macOS 后台守护进程，会持续监控活动窗口�
 1. `/claude-cobrain:cobrain uninstall` - 停止守护进程并移除 LaunchAgent 与守护进程文件
 2. `/plugin uninstall claude-cobrain` - 卸载插件
 
-## 系统架构
-
-![System Architecture](system-architecture.png)
-
 ## 系统要求
 
 | 组件       | 要求               | 目的                                  |
