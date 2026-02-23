@@ -1,5 +1,7 @@
 # claude-cobrain
 
+**English** | [简体中文](./README_CN.md)
+
 ## What if AI had the same context as you?
 
 Claude and other models already excel at specific tasks like coding. This project gives them persistent memory of entire workflow by continuously recording your screen activities.
