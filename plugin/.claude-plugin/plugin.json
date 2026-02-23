@@ -1,0 +1,17 @@
+{
+  "name": "claude-cobrain",
+  "version": "0.2.6",
+  "description": "Screen activity memory daemon - captures active windows and summarizes them using local VLM",
+  "author": {
+    "name": "cyrus-cai"
+  },
+  "repository": "https://github.com/cyrus-cai/claude-cobrain",
+  "license": "MIT",
+  "keywords": [
+    "memory",
+    "screen-capture",
+    "vlm",
+    "macos",
+    "daemon"
+  ]
+}
