@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.2] - 2026-02-24
+
+### Added
+- Auto-create output directory when writing entries for improved reliability.
+
+### Changed
+- Refactored skills architecture: split into modular skills, removed LaunchAgent dependency.
+- Background process now runs directly without LaunchAgent wrapper.
+
 ## [0.2.6] - 2026-02-23
 
 ### Added
