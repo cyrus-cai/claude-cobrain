@@ -212,6 +212,7 @@ def output_file(dt: datetime) -> Path:
 
 def ensure_header(path: Path, dt: datetime):
     if not path.exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(f"# {dt.strftime('%Y-%m-%d')} · Live Memory\n\n")
 
 def write_entry(app: str, summary: str):
