@@ -40,6 +40,13 @@ claude-cobrain 是一个 Claude Code 插件。它通过持续分析屏幕活动�
 /claude-cobrain:cobrain install
 ```
 
+
+然后，守护进程会自动启动，并在 `~/.claude/cobrain/` 中生成 markdown 文件。
+> Example:
+> ![example-raw](./example-raw.png){ width=600px }
+
+
+
 **配置要求**
 
 | 组件       | 要求               | 用途                       |

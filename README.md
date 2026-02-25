@@ -45,6 +45,11 @@ Step 3 - Set up the daemon:
 /claude-cobrain:cobrain install
 ```
 
+Then, the memory daemon will start automatically and generates markdown file in `~/.claude/cobrain/`.
+> Example:
+> ![example-raw](./example-raw.png){ width=600px }
+
+
 System Requirements
 
 | Component         | Requirement                     | Purpose                                      |
