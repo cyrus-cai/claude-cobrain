@@ -19,6 +19,7 @@ Route `/claude-cobrain:cobrain $ARGUMENTS` to the appropriate skill.
 | `restart`   | restart   | Restart with foreground permission check        |
 | `logs`      | logs      | View daemon logs                               |
 | `today`     | today     | Review and summarize today's memory             |
+| `hourly`    | hourly    | View hourly activity reports                    |
 | `uninstall` | uninstall | Remove daemon and LaunchAgent                  |
 
 ## Dispatch Rules
@@ -31,4 +32,4 @@ Route `/claude-cobrain:cobrain $ARGUMENTS` to the appropriate skill.
 3. For `install`, invoke the `install` skill and explicitly pass `${CLAUDE_PLUGIN_ROOT}` as absolute path context.
 4. For `start` or `stop`, invoke the `startstop` skill and pass the action.
 5. For all other known actions, invoke the matching skill directly.
-6. For unknown actions, show supported actions: `install`, `status`, `start`, `stop`, `restart`, `logs`, `today`, `uninstall`.
+6. For unknown actions, show supported actions: `install`, `status`, `start`, `stop`, `restart`, `logs`, `today`, `hourly`, `uninstall`.

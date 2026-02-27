@@ -22,7 +22,9 @@ import subprocess
 import sys
 import tempfile
 import time
-from datetime import datetime
+import re
+from collections import OrderedDict
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from PIL import Image
@@ -226,6 +228,82 @@ def write_entry(app: str, summary: str):
         f.write(entry)
 
 
+# ── hourly report ────────────────────────────────────
+
+_ENTRY_RE = re.compile(r"^### (\d{2}:\d{2}:\d{2}) · (.+?) `")
+
+def hourly_report_file(dt: datetime) -> Path:
+    return OUTPUT_DIR / f"{dt.strftime('%Y%m%d')}-hourly.md"
+
+def generate_hourly_report(hour_start: datetime):
+    """Generate an hourly summary for the hour starting at hour_start."""
+    raw_path = output_file(hour_start)
+    if not raw_path.exists():
+        return
+
+    hh = hour_start.strftime("%H")
+    section_header = f"## {hh}:00–{hh}:59"
+
+    # idempotency: skip if already written
+    report_path = hourly_report_file(hour_start)
+    if report_path.exists():
+        existing = report_path.read_text(encoding="utf-8")
+        if re.search(rf"^{re.escape(section_header)}", existing, re.MULTILINE):
+            return
+
+    # parse entries for this hour
+    entries = []  # list of (time_str, app, content_first_line)
+    with open(raw_path, "r", encoding="utf-8") as f:
+        current_time = None
+        current_app = None
+        current_content_lines = []
+        for line in f:
+            m = _ENTRY_RE.match(line)
+            if m:
+                # save previous entry if it belongs to target hour
+                if current_time and current_time.startswith(hh + ":"):
+                    first_line = current_content_lines[0].strip() if current_content_lines else ""
+                    entries.append((current_time, current_app, first_line[:80]))
+                current_time = m.group(1)
+                current_app = m.group(2)
+                current_content_lines = []
+            elif current_time:
+                if line.strip():
+                    current_content_lines.append(line)
+        # flush last entry
+        if current_time and current_time.startswith(hh + ":"):
+            first_line = current_content_lines[0].strip() if current_content_lines else ""
+            entries.append((current_time, current_app, first_line[:80]))
+
+    if not entries:
+        return
+
+    # aggregate by app
+    app_data = OrderedDict()  # app -> { count, first_content }
+    for ts, app, content in entries:
+        if app not in app_data:
+            app_data[app] = {"count": 0, "first_content": content}
+        app_data[app]["count"] += 1
+
+    time_range = f"{entries[0][0]}–{entries[-1][0]}"
+    apps_summary = ", ".join(f"{app} ({d['count']})" for app, d in app_data.items())
+
+    lines = [
+        f"\n{section_header} ({len(entries)} entries)\n",
+        f"**Time range:** {time_range}",
+        f"**Apps:** {apps_summary}\n",
+    ]
+    for app, d in app_data.items():
+        lines.append(f"- **{app}** ×{d['count']} — {d['first_content']}")
+    lines.append("")
+
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(report_path, "a", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+
+    log.info(f"hourly report: {section_header} ({len(entries)} entries)")
+
+
 # ── main loop ────────────────────────────────────────
 
 def run():
@@ -233,11 +311,21 @@ def run():
     log.info(f"co-brain started | backend={MODEL_BACKEND} | interval={INTERVAL}s | output={OUTPUT_DIR}")
 
     _idle_logged = False
+    _last_report_hour_start = datetime.now().replace(minute=0, second=0, microsecond=0)
 
     while True:
         t0 = time.time()
         img_path = None
         try:
+            # ── hourly report check ──
+            current_hour_start = datetime.now().replace(minute=0, second=0, microsecond=0)
+            while _last_report_hour_start < current_hour_start:
+                try:
+                    generate_hourly_report(_last_report_hour_start)
+                except Exception as e:
+                    log.error(f"hourly report error: {e}", exc_info=True)
+                _last_report_hour_start += timedelta(hours=1)
+
             # ── idle detection ──
             idle = get_idle_seconds()
             if idle >= IDLE_TIMEOUT:

@@ -1,6 +1,6 @@
 {
   "name": "claude-cobrain",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "description": "Screen activity memory daemon - captures active windows and summarizes them using local VLM",
   "author": {
     "name": "cyrus-cai"
