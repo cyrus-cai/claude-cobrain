@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "claude-cobrain",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "source": "./plugin",
       "description": "Screen activity memory daemon - captures active windows and summarizes them using local VLM"
     }
