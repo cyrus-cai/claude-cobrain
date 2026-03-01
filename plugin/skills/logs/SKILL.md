@@ -5,16 +5,17 @@ description: View cobrain daemon logs.
 
 # logs
 
-1. Read output directory from plist:
+Use direct `python3` logs via controller script.
 
 ```bash
-defaults read ~/Library/LaunchAgents/com.cobrain.plist WorkingDirectory
+if [[ -n "${CLAUDE_PLUGIN_ROOT:-}" && -f "${CLAUDE_PLUGIN_ROOT}/scripts/control.sh" ]]; then
+  CONTROL_SCRIPT="${CLAUDE_PLUGIN_ROOT}/scripts/control.sh"
+elif [[ -f "./plugin/scripts/control.sh" ]]; then
+  CONTROL_SCRIPT="./plugin/scripts/control.sh"
+else
+  CONTROL_SCRIPT="$(ls -dt "$HOME"/.claude/plugins/cache/*/claude-cobrain/*/scripts/control.sh 2>/dev/null | head -1)"
+fi
+[[ -n "${CONTROL_SCRIPT:-}" && -f "$CONTROL_SCRIPT" ]] || { echo "control.sh not found. Run: /claude-cobrain:cobrain install"; exit 1; }
+
+bash "$CONTROL_SCRIPT" logs
 ```
-
-2. Tail log:
-
-```bash
-tail -50 <OUTPUT_DIR>/daemon.log
-```
-
-If plist missing or log missing, report the concrete missing path.

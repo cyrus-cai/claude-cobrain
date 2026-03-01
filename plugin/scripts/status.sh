@@ -26,8 +26,12 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PLUGIN_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 PLUGIN_JSON="$PLUGIN_ROOT/.claude-plugin/plugin.json"
-DAEMON_SCRIPT="$PLUGIN_ROOT/scripts/cobrain.py"
 OUTPUT_DIR="${OUTPUT_DIR:-$HOME/.claude/cobrain}"
+PID_FILE="$OUTPUT_DIR/cobrain.pid"
+DEPLOYED_SCRIPT="$OUTPUT_DIR/cobrain.py"
+PLUGIN_SCRIPT="$PLUGIN_ROOT/scripts/cobrain.py"
+RUNTIME_OUT="$OUTPUT_DIR/runtime.stdout.log"
+RUNTIME_ERR="$OUTPUT_DIR/runtime.stderr.log"
 TODAY=$(date +%Y%m%d)
 
 # ── Helpers ─────────────────────────────────────────────
@@ -43,7 +47,16 @@ else
 fi
 
 # ── 2. Process ──────────────────────────────────────────
-PID=$(pgrep -f "cobrain.py" 2>/dev/null || true)
+PID=""
+if [[ -f "$PID_FILE" ]]; then
+  CANDIDATE_PID=$(cat "$PID_FILE" 2>/dev/null || true)
+  if [[ -n "$CANDIDATE_PID" ]] && kill -0 "$CANDIDATE_PID" 2>/dev/null; then
+    PID="$CANDIDATE_PID"
+  fi
+fi
+if [[ -z "$PID" ]]; then
+  PID=$(pgrep -f "$DEPLOYED_SCRIPT" 2>/dev/null | head -n1 || true)
+fi
 if [[ -n "$PID" ]]; then
   PROCESS="${GREEN}running${NC} (PID $PID)"
 else
@@ -60,8 +73,10 @@ else
 fi
 
 # ── 4. Script ───────────────────────────────────────────
-if [[ -f "$DAEMON_SCRIPT" ]]; then
-  SCRIPT_STATUS="$DAEMON_SCRIPT"
+if [[ -f "$DEPLOYED_SCRIPT" ]]; then
+  SCRIPT_STATUS="$DEPLOYED_SCRIPT"
+elif [[ -f "$PLUGIN_SCRIPT" ]]; then
+  SCRIPT_STATUS="$PLUGIN_SCRIPT (not deployed)"
 else
   SCRIPT_STATUS="${RED}not found${NC}"
 fi
@@ -122,6 +137,18 @@ else
   LAST_LOG="${DIM}no daemon.log${NC}"
 fi
 
+# ── 9. Runtime stderr/stdout ────────────────────────────
+if [[ -f "$RUNTIME_OUT" ]]; then
+  LAST_RUNTIME_OUT=$(tail -1 "$RUNTIME_OUT" 2>/dev/null || echo "empty")
+else
+  LAST_RUNTIME_OUT="${DIM}no runtime.stdout.log${NC}"
+fi
+if [[ -f "$RUNTIME_ERR" ]]; then
+  LAST_RUNTIME_ERR=$(tail -1 "$RUNTIME_ERR" 2>/dev/null || echo "empty")
+else
+  LAST_RUNTIME_ERR="${DIM}no runtime.stderr.log${NC}"
+fi
+
 # ── Output ──────────────────────────────────────────────
 echo ""
 echo -e "${BOLD}cobrain v${VERSION}${NC}"
@@ -136,6 +163,8 @@ echo -e "  Ollama:           $OLLAMA"
 echo -e "${DIM}─────────────────────────────${NC}"
 echo -e "  Today's log:      $TODAY_STATUS"
 echo -e "  Last activity:    $LAST_LOG"
+echo -e "  Runtime stdout:   $LAST_RUNTIME_OUT"
+echo -e "  Runtime stderr:   $LAST_RUNTIME_ERR"
 echo ""
 
 # ── Warnings ────────────────────────────────────────────

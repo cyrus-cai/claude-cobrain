@@ -1,11 +1,11 @@
 ---
 name: install
-description: Install claude-cobrain daemon - check prerequisites, deploy daemon script, configure LaunchAgent, and start the service. Use when user wants to set up cobrain for the first time.
+description: Install claude-cobrain daemon in direct python3 mode (no LaunchAgent).
 ---
 
 # install
 
-Install claude-cobrain daemon and start it as a LaunchAgent.
+Install claude-cobrain daemon and start it with `python3` directly.
 
 ## Language
 
@@ -25,11 +25,11 @@ Find the plugin root directory. The plugin root directory is most likely in `<US
 
 Required source files:
 - `<CLAUDE_PLUGIN_ROOT>/scripts/cobrain.py` - daemon script to copy
-- `<CLAUDE_PLUGIN_ROOT>/launchagents/com.cobrain.plist` - plist template to process
+- `<CLAUDE_PLUGIN_ROOT>/scripts/control.sh` - process controller script
 
 ## Execution principle
 
-Minimize user approval prompts: chain independent shell commands with `&&` into single Bash calls. The entire install should require at most 3 user approvals.
+Minimize user approval prompts: chain independent shell commands with `&&` into single Bash calls.
 
 ## Flow
 
@@ -44,9 +44,9 @@ Minimize user approval prompts: chain independent shell commands with `&&` into 
 Run all checks in a single command:
 
 ```bash
-command -v python3.11 && python3.11 --version && \
+command -v python3 && python3 --version && \
 command -v ollama && ollama --version && \
-python3.11 -c "import PIL, ollama; print('ok')" && \
+python3 -c "import PIL, ollama; print('ok')" && \
 ollama list | grep qwen3-vl
 ```
 
@@ -54,48 +54,49 @@ If success: skip installation steps.
 
 If failure: install only missing prerequisites.
 
-- Missing Python 3.11: `brew install python@3.11`
+- Missing Python 3: `brew install python`
 - Missing Ollama CLI: `brew install ollama`
-- Missing Python packages: `pip3.11 install Pillow ollama`
+- Missing Python packages: `pip3 install Pillow ollama`
 - Missing model: `ollama pull qwen3-vl:2b`
 
 ### 3. Deploy files (1 Bash call)
 
-Read the plist template with the Read tool first, then chain all file operations into a single Bash command:
+Chain file operations into one Bash call:
 
-1. Detect python path with `command -v python3.11`.
-2. Read plist template from `<CLAUDE_PLUGIN_ROOT>/launchagents/com.cobrain.plist` (use Read tool, no approval needed).
-3. Run one Bash call that does all of the following:
-   - Create `OUTPUT_DIR` if needed
-   - Copy daemon script from `<CLAUDE_PLUGIN_ROOT>/scripts/cobrain.py` to `<OUTPUT_DIR>/cobrain.py`
-   - Write `.source_repo` marker to `<OUTPUT_DIR>/.source_repo`
-   - Write processed plist (with `PYTHON_PATH` and `OUTPUT_DIR` replaced) to `~/Library/LaunchAgents/com.cobrain.plist` using a heredoc
+1. Create `OUTPUT_DIR` if needed.
+2. Copy daemon script from `<CLAUDE_PLUGIN_ROOT>/scripts/cobrain.py` to `<OUTPUT_DIR>/cobrain.py`.
+3. Copy controller script from `<CLAUDE_PLUGIN_ROOT>/scripts/control.sh` to `<OUTPUT_DIR>/control.sh` and `chmod +x`.
+4. Write `.source_repo` marker to `<OUTPUT_DIR>/.source_repo`.
+5. Remove stale pid file `<OUTPUT_DIR>/cobrain.pid` if it exists.
 
 ### 4. Start service (1 Bash call)
 
-Chain unload (if exists), load, and verify into one command:
+Run direct python3 start through the controller:
 
 ```bash
-launchctl unload ~/Library/LaunchAgents/com.cobrain.plist 2>/dev/null; \
-launchctl load ~/Library/LaunchAgents/com.cobrain.plist && \
-launchctl list | grep com.cobrain
+if [[ -n "${CLAUDE_PLUGIN_ROOT:-}" && -f "${CLAUDE_PLUGIN_ROOT}/scripts/control.sh" ]]; then
+  CONTROL_SCRIPT="${CLAUDE_PLUGIN_ROOT}/scripts/control.sh"
+elif [[ -f "./plugin/scripts/control.sh" ]]; then
+  CONTROL_SCRIPT="./plugin/scripts/control.sh"
+else
+  CONTROL_SCRIPT="$(ls -dt "$HOME"/.claude/plugins/cache/*/claude-cobrain/*/scripts/control.sh 2>/dev/null | head -1)"
+fi
+[[ -n "${CONTROL_SCRIPT:-}" && -f "$CONTROL_SCRIPT" ]] || { echo "control.sh not found"; exit 1; }
+bash "$CONTROL_SCRIPT" start
 ```
 
 ### 5. Completion output
 
 Return:
-- `Done. Daemon is running. Logs: <OUTPUT_DIR>/daemon.log`
+- `Done. Daemon is running. Logs:`
+- `  - <OUTPUT_DIR>/daemon.log`
+- `  - <OUTPUT_DIR>/runtime.stdout.log`
+- `  - <OUTPUT_DIR>/runtime.stderr.log`
 - macOS permission note below.
 
 ## macOS Permissions
 
-The LaunchAgent runs through `/bin/zsh`, so permissions are requested under `zsh`.
-
-On first launch macOS may show:
-
-> "zsh" can run in the background.
-
-Allow it. If logs stop after startup, add `/bin/zsh` to both permissions in:
+If logs show permission errors, add your terminal app to both permissions in:
 
 - System Settings -> Privacy & Security -> Accessibility
 - System Settings -> Privacy & Security -> Screen Recording

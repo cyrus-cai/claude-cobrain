@@ -54,7 +54,7 @@ System Requirements
 
 | Component         | Requirement                     | Purpose                                      |
 | ----------------- | ------------------------------- | -------------------------------------------- |
-| Operating System  | macOS                           | LaunchAgent support, Accessibility API       |
+| Operating System  | macOS                           | Python daemon runtime, Accessibility API     |
 | Python            | 3.11                            | Runtime for daemon script                    |
 | Ollama            | Latest version                  | Local LLM inference service                  |
 | Model             | qwen3-vl:2b                     | Vision Language Model (2 billion parameters) |

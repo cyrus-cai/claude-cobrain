@@ -51,7 +51,7 @@ claude-cobrain 是一个 Claude Code 插件。它通过持续分析屏幕活动�
 
 | 组件       | 要求               | 用途                       |
 | ---------- | ------------------ | -------------------------- |
-| 操作系统   | macOS              | LaunchAgent、Accessibility |
+| 操作系统   | macOS              | Python 守护进程、Accessibility |
 | Python     | 3.11               | 守护进程运行环境           |
 | Ollama     | 最新版本           | 本地 LLM 推理              |
 | 模型       | qwen3-vl:2b        | 本地 VLM 推理（20亿参数）  |

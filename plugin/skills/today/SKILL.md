@@ -9,16 +9,18 @@ Generate an actionable daily insight briefing — not a logbook.
 
 ## Phase 1: Locate and Profile the Data
 
-1. Read output directory from plist:
+1. Resolve output directory (direct python mode):
 
 ```bash
-defaults read ~/Library/LaunchAgents/com.cobrain.plist WorkingDirectory
+OUTPUT_DIR="${OUTPUT_DIR:-$HOME/.claude/cobrain}"
+echo "$OUTPUT_DIR"
 ```
 
 2. Build today's file path and check existence:
 
 ```bash
-TODAY_FILE="<OUTPUT_DIR>/$(date +%Y%m%d)-raw.md"
+OUTPUT_DIR="${OUTPUT_DIR:-$HOME/.claude/cobrain}"
+TODAY_FILE="$OUTPUT_DIR/$(date +%Y%m%d)-raw.md"
 test -f "$TODAY_FILE" && echo "exists" || echo "missing"
 ```
 

@@ -20,15 +20,15 @@ Route `/claude-cobrain:cobrain $ARGUMENTS` to the appropriate skill.
 | `logs`      | logs      | View daemon logs                               |
 | `today`     | today     | Review and summarize today's memory             |
 | `hourly`    | hourly    | View hourly activity reports                    |
-| `uninstall` | uninstall | Remove daemon and LaunchAgent                  |
+| `uninstall` | uninstall | Remove daemon runtime files                    |
 
 ## Dispatch Rules
 
 1. Normalize `$ARGUMENTS` to a single lower-case action token.
 2. If no action is provided:
-   - Check whether cobrain is installed: `ls ~/Library/LaunchAgents/com.cobrain.plist`.
-   - If the plist does **not** exist, invoke the `install` skill.
-   - If the plist **does** exist, invoke the `status` skill.
+   - Check whether daemon script exists: `test -f ${OUTPUT_DIR:-$HOME/.claude/cobrain}/cobrain.py`.
+   - If script does **not** exist, invoke the `install` skill.
+   - If script exists, invoke the `status` skill.
 3. For `install`, invoke the `install` skill and explicitly pass `${CLAUDE_PLUGIN_ROOT}` as absolute path context.
 4. For `start` or `stop`, invoke the `startstop` skill and pass the action.
 5. For all other known actions, invoke the matching skill directly.

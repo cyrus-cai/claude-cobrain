@@ -7,31 +7,17 @@ description: Start or stop cobrain daemon.
 
 Action is passed as context: `start` or `stop`.
 
-## Start
-
-1. Check if already running:
+Run the unified controller script in direct `python3` mode (no LaunchAgent).
 
 ```bash
-pgrep -f "cobrain.py" || echo "not running"
-```
+if [[ -n "${CLAUDE_PLUGIN_ROOT:-}" && -f "${CLAUDE_PLUGIN_ROOT}/scripts/control.sh" ]]; then
+  CONTROL_SCRIPT="${CLAUDE_PLUGIN_ROOT}/scripts/control.sh"
+elif [[ -f "./plugin/scripts/control.sh" ]]; then
+  CONTROL_SCRIPT="./plugin/scripts/control.sh"
+else
+  CONTROL_SCRIPT="$(ls -dt "$HOME"/.claude/plugins/cache/*/claude-cobrain/*/scripts/control.sh 2>/dev/null | head -1)"
+fi
+[[ -n "${CONTROL_SCRIPT:-}" && -f "$CONTROL_SCRIPT" ]] || { echo "control.sh not found. Run: /claude-cobrain:cobrain install"; exit 1; }
 
-If already running, report PID and do nothing.
-
-2. Start as background process:
-
-```bash
-nohup /opt/homebrew/bin/python3.11 ${CLAUDE_PLUGIN_ROOT}/scripts/cobrain.py > /dev/null 2>&1 &
-echo "Started cobrain (PID $!)"
-```
-
-3. Verify:
-
-```bash
-sleep 2 && pgrep -f "cobrain.py"
-```
-
-## Stop
-
-```bash
-pkill -f "cobrain.py" && echo "Stopped" || echo "cobrain is not running"
+bash "$CONTROL_SCRIPT" "$ACTION"
 ```

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.4] - 2026-03-01
+
+### Changed
+- Switched daemon lifecycle management to direct `python3` control (`start/stop/restart`) via `plugin/scripts/control.sh`.
+- Added runtime stdout/stderr log paths (`runtime.stdout.log`, `runtime.stderr.log`) for startup failure diagnostics.
+- Removed `CLAUDE_PLUGIN_ROOT` hard dependency from start/stop/restart/logs/status skill flows.
+
 ## [0.3.2] - 2026-02-24
 
 ### Added

@@ -21,6 +21,12 @@
         <string>OUTPUT_DIR</string>
     </dict>
 
+    <key>StandardOutPath</key>
+    <string>OUTPUT_DIR/launchd.stdout.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>OUTPUT_DIR/launchd.stderr.log</string>
+
     <key>RunAtLoad</key>
     <true/>
 
